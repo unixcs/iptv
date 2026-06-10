@@ -3,79 +3,414 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="IPTV 播放列表下载页" />
+    <meta name="description" content="IPTV 文件快速下载与链接复制页" />
     <title>my_iptv</title>
     <style>
       :root {
         color-scheme: light dark;
-        --bg: #0f172a;
-        --card: rgba(255, 255, 255, 0.08);
+        --bg: #020617;
+        --panel: rgba(15, 23, 42, 0.82);
+        --panel-strong: rgba(15, 23, 42, 0.95);
         --text: #e2e8f0;
         --muted: #94a3b8;
         --accent: #38bdf8;
-        --border: rgba(148, 163, 184, 0.2);
+        --accent-strong: #0ea5e9;
+        --success: #22c55e;
+        --border: rgba(148, 163, 184, 0.18);
+        --shadow: 0 24px 80px rgba(2, 6, 23, 0.42);
       }
-      * { box-sizing: border-box; }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
         min-height: 100vh;
         display: grid;
         place-items: center;
+        padding: 20px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: radial-gradient(circle at top, #1e293b, var(--bg));
+        background:
+          radial-gradient(circle at top, rgba(14, 165, 233, 0.2), transparent 28%),
+          linear-gradient(180deg, #0f172a 0%, var(--bg) 100%);
         color: var(--text);
       }
+
       main {
-        width: min(720px, calc(100vw - 32px));
+        width: min(860px, 100%);
         padding: 32px;
         border: 1px solid var(--border);
-        border-radius: 20px;
-        background: var(--card);
-        backdrop-filter: blur(12px);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        border-radius: 24px;
+        background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), var(--panel));
+        backdrop-filter: blur(14px);
+        box-shadow: var(--shadow);
       }
-      h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 42px); }
-      p { margin: 0 0 12px; line-height: 1.7; color: var(--muted); }
-      .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
-      a {
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(30px, 4vw, 44px);
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .hero {
+        display: grid;
+        gap: 10px;
+      }
+
+      .card {
+        margin-top: 28px;
+        padding: 22px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: rgba(15, 23, 42, 0.52);
+      }
+
+      .label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      select,
+      input {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--panel-strong);
+        color: var(--text);
+        padding: 14px 16px;
+        font-size: 15px;
+        outline: none;
+      }
+
+      select:focus,
+      input:focus {
+        border-color: rgba(56, 189, 248, 0.7);
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      button,
+      a.button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 12px 18px;
-        border-radius: 999px;
+        min-height: 48px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
         text-decoration: none;
         font-weight: 600;
-        border: 1px solid var(--border);
+        font-size: 15px;
+        cursor: pointer;
+        transition: 160ms ease;
       }
-      a.primary { background: var(--accent); color: #082f49; border-color: transparent; }
-      a.secondary { color: var(--text); }
+
+      button:hover,
+      a.button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(56, 189, 248, 0.45);
+      }
+
+      .primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        color: #082f49;
+        border-color: transparent;
+      }
+
+      .secondary {
+        background: rgba(30, 41, 59, 0.68);
+        color: var(--text);
+      }
+
+      .info-list {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .info-block {
+        display: grid;
+        gap: 8px;
+      }
+
+      .hint,
+      .meta,
+      .empty {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .status {
+        margin-top: 14px;
+        min-height: 22px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .status.success {
+        color: var(--success);
+      }
+
+      .status.error {
+        color: #fda4af;
+      }
+
+      .file-count {
+        margin-top: 16px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
       code {
         display: block;
-        margin-top: 16px;
+        margin: 0;
         padding: 14px 16px;
-        border-radius: 12px;
-        background: rgba(15, 23, 42, 0.65);
-        overflow-x: auto;
-        white-space: pre;
+        border-radius: 14px;
+        background: rgba(2, 6, 23, 0.55);
         color: #cbd5e1;
+        white-space: nowrap;
+        overflow-x: auto;
       }
-      .note { margin-top: 18px; font-size: 14px; color: var(--muted); }
+
+      .footer-note {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px dashed var(--border);
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 22px;
+          border-radius: 20px;
+        }
+
+        .actions {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
     <main>
-      <h1>my_iptv</h1>
-      <p>这是一个可直接部署到 Cloudflare Pages 的静态下载页。</p>
-      <p>播放列表文件位于 <strong>/lt.m3u</strong>，可直接下载或复制链接到 IPTV 客户端。</p>
+      <section class="hero">
+        <h1>my_iptv</h1>
+        <p>选择同目录下的文件后，可以直接下载、打开链接，或复制完整 URL / URL 后缀。</p>
+        <p>无论公网域名怎么变化，页面都会自动基于当前访问域名拼接最终可用地址。</p>
+      </section>
 
-      <div class="actions">
-        <a class="primary" href="./lt.m3u" download>下载 lt.m3u</a>
-        <a class="secondary" href="./lt.m3u" target="_blank" rel="noreferrer">打开播放列表</a>
-      </div>
+      <section class="card grid">
+        <div>
+          <label class="label" for="fileSelect">选择要使用的文件</label>
+          <select id="fileSelect" aria-label="文件选择框">
+            <option value="">正在读取文件列表...</option>
+          </select>
+          <div id="fileCount" class="file-count">--</div>
+        </div>
 
-      <code>https://你的域名/lt.m3u</code>
+        <div class="actions">
+          <a id="downloadButton" class="button primary" href="#" download aria-disabled="true">下载文件</a>
+          <a id="openButton" class="button secondary" href="#" target="_blank" rel="noreferrer" aria-disabled="true">打开链接</a>
+          <button id="copyFullButton" class="secondary" type="button">复制完整链接</button>
+          <button id="copySuffixButton" class="secondary" type="button">复制 URL 后缀</button>
+        </div>
 
-      <div class="note">如果你在 Cloudflare Pages 中部署，请将构建输出目录设置为 <strong>public</strong>。</div>
+        <div class="info-list">
+          <div class="info-block">
+            <span class="label">完整下载地址</span>
+            <code id="fullUrl">尚未选择文件</code>
+          </div>
+          <div class="info-block">
+            <span class="label">URL 后缀</span>
+            <code id="urlSuffix">尚未选择文件</code>
+          </div>
+        </div>
+
+        <div id="status" class="status" aria-live="polite"></div>
+        <div class="footer-note">
+          文件列表来自同目录下的 <strong>files.json</strong>。新增或删除文件时，同步更新这个清单即可。
+        </div>
+      </section>
     </main>
+
+    <script>
+      const manifestUrl = "./files.json";
+      const fileSelect = document.getElementById("fileSelect");
+      const downloadButton = document.getElementById("downloadButton");
+      const openButton = document.getElementById("openButton");
+      const copyFullButton = document.getElementById("copyFullButton");
+      const copySuffixButton = document.getElementById("copySuffixButton");
+      const fullUrl = document.getElementById("fullUrl");
+      const urlSuffix = document.getElementById("urlSuffix");
+      const status = document.getElementById("status");
+      const fileCount = document.getElementById("fileCount");
+
+      const setStatus = (message, type = "") => {
+        status.textContent = message;
+        status.className = type ? `status ${type}` : "status";
+      };
+
+      const setButtonsDisabled = (disabled) => {
+        [downloadButton, openButton].forEach((element) => {
+          element.setAttribute("aria-disabled", String(disabled));
+          element.style.pointerEvents = disabled ? "none" : "auto";
+          element.style.opacity = disabled ? "0.5" : "1";
+        });
+
+        [copyFullButton, copySuffixButton].forEach((element) => {
+          element.disabled = disabled;
+          element.style.opacity = disabled ? "0.5" : "1";
+          element.style.cursor = disabled ? "not-allowed" : "pointer";
+        });
+      };
+
+      const getSelectedPath = () => fileSelect.value;
+
+      const buildFileUrl = (path) => new URL(path, window.location.href).toString();
+
+      const buildSuffix = (path) => `/${path.replace(/^\.\//, "")}`;
+
+      const refreshSelection = () => {
+        const selectedPath = getSelectedPath();
+
+        if (!selectedPath) {
+          fullUrl.textContent = "尚未选择文件";
+          urlSuffix.textContent = "尚未选择文件";
+          downloadButton.href = "#";
+          openButton.href = "#";
+          downloadButton.removeAttribute("download");
+          setButtonsDisabled(true);
+          return;
+        }
+
+        const fileUrl = buildFileUrl(selectedPath);
+        const suffix = buildSuffix(selectedPath);
+        const filename = selectedPath.split("/").pop();
+
+        fullUrl.textContent = fileUrl;
+        urlSuffix.textContent = suffix;
+        downloadButton.href = fileUrl;
+        openButton.href = fileUrl;
+        downloadButton.setAttribute("download", filename || "download");
+        setButtonsDisabled(false);
+      };
+
+      const copyText = async (text, successMessage) => {
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const helper = document.createElement("textarea");
+            helper.value = text;
+            helper.setAttribute("readonly", "readonly");
+            helper.style.position = "absolute";
+            helper.style.left = "-9999px";
+            document.body.appendChild(helper);
+            helper.select();
+            document.execCommand("copy");
+            document.body.removeChild(helper);
+          }
+
+          setStatus(successMessage, "success");
+        } catch (error) {
+          console.error(error);
+          setStatus("复制失败，请手动复制。", "error");
+        }
+      };
+
+      const renderOptions = (files) => {
+        fileSelect.innerHTML = "";
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = files.length ? "请选择一个文件" : "没有可用文件";
+        fileSelect.appendChild(placeholder);
+
+        files.forEach((path) => {
+          const option = document.createElement("option");
+          option.value = path;
+          option.textContent = path.replace(/^\.\//, "");
+          fileSelect.appendChild(option);
+        });
+
+        fileCount.textContent = files.length
+          ? `当前共发现 ${files.length} 个文件`
+          : "当前目录没有可展示的文件";
+      };
+
+      const loadFiles = async () => {
+        setButtonsDisabled(true);
+
+        try {
+          const response = await fetch(manifestUrl, { cache: "no-store" });
+
+          if (!response.ok) {
+            throw new Error(`Manifest request failed: ${response.status}`);
+          }
+
+          const manifest = await response.json();
+          const files = Array.isArray(manifest.files) ? manifest.files.filter(Boolean) : [];
+
+          renderOptions(files);
+          refreshSelection();
+          setStatus(files.length ? "文件列表加载完成。" : "文件清单为空。", files.length ? "success" : "");
+        } catch (error) {
+          console.error(error);
+          fileSelect.innerHTML = '<option value="">文件列表加载失败</option>';
+          fileCount.textContent = "无法读取 files.json";
+          setButtonsDisabled(true);
+          setStatus("读取文件清单失败，请检查同目录下的 files.json。", "error");
+        }
+      };
+
+      fileSelect.addEventListener("change", () => {
+        refreshSelection();
+        if (fileSelect.value) {
+          setStatus("已切换文件。", "success");
+        }
+      });
+
+      copyFullButton.addEventListener("click", () => {
+        const selectedPath = getSelectedPath();
+        if (!selectedPath) {
+          setStatus("请先选择一个文件。", "error");
+          return;
+        }
+
+        copyText(buildFileUrl(selectedPath), "完整链接已复制。");
+      });
+
+      copySuffixButton.addEventListener("click", () => {
+        const selectedPath = getSelectedPath();
+        if (!selectedPath) {
+          setStatus("请先选择一个文件。", "error");
+          return;
+        }
+
+        copyText(buildSuffix(selectedPath), "URL 后缀已复制。");
+      });
+
+      loadFiles();
+    </script>
   </body>
 </html>
