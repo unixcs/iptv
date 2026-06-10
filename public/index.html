@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="IPTV 播放列表下载页" />
+    <title>my_iptv</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0f172a;
+        --card: rgba(255, 255, 255, 0.08);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --border: rgba(148, 163, 184, 0.2);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #1e293b, var(--bg));
+        color: var(--text);
+      }
+      main {
+        width: min(720px, calc(100vw - 32px));
+        padding: 32px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--card);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      }
+      h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 42px); }
+      p { margin: 0 0 12px; line-height: 1.7; color: var(--muted); }
+      .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        border: 1px solid var(--border);
+      }
+      a.primary { background: var(--accent); color: #082f49; border-color: transparent; }
+      a.secondary { color: var(--text); }
+      code {
+        display: block;
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.65);
+        overflow-x: auto;
+        white-space: pre;
+        color: #cbd5e1;
+      }
+      .note { margin-top: 18px; font-size: 14px; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>my_iptv</h1>
+      <p>这是一个可直接部署到 Cloudflare Pages 的静态下载页。</p>
+      <p>播放列表文件位于 <strong>/lt.m3u</strong>，可直接下载或复制链接到 IPTV 客户端。</p>
+
+      <div class="actions">
+        <a class="primary" href="./lt.m3u" download>下载 lt.m3u</a>
+        <a class="secondary" href="./lt.m3u" target="_blank" rel="noreferrer">打开播放列表</a>
+      </div>
+
+      <code>https://你的域名/lt.m3u</code>
+
+      <div class="note">如果你在 Cloudflare Pages 中部署，请将构建输出目录设置为 <strong>public</strong>。</div>
+    </main>
+  </body>
+</html>
